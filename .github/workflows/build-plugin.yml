@@ -1,0 +1,36 @@
+name: Build SolidGear plugin
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Rust
+        run: rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
+
+      - name: Install wasm-tools
+        run: cargo +stable install wasm-tools --version 1.263.0 --locked
+
+      - name: Build plugin ZIP
+        env:
+          RUSTUP_TOOLCHAIN: stable
+        run: .\build.ps1
+
+      - name: Upload plugin ZIP
+        uses: actions/upload-artifact@v7
+        with:
+          path: solidgear.zip
+          archive: false
+          if-no-files-found: error
