@@ -1,0 +1,476 @@
+{
+  "id": "solidgear",
+  "name": "SolidGear",
+  "version": "0.1.0",
+  "description": "Gear tools for SolidCraft.",
+  "capabilities": [
+    "commands@0.1"
+  ],
+  "runtime": {
+    "module": "solidgear.wasm",
+    "limits": {
+      "fuel": 500000000,
+      "memory_mib": 64,
+      "deadline_ms": 30000
+    },
+    "commands": [
+      "sketch.create",
+      "sketch.line",
+      "sketch.circle.center",
+      "sketch.finish",
+      "solid.extrude",
+      "sketch.spline.fit_point",
+      "sketch.arc.three_point",
+      "sketch.pattern.circular",
+      "solid.sweep",
+      "selection.delete",
+      "solid.mirror",
+      "solid.revolve"
+    ],
+    "entries": [
+      {
+        "name": "involute-gear",
+        "effect": "edit",
+        "input_schema": {
+          "type": "object",
+          "title": "Involute Gear",
+          "x-solidcraft-icon": "icons/involute-gear.svg",
+          "properties": {
+            "01_teeth": {
+              "type": "integer",
+              "title": "Gear 1 · Number of teeth",
+              "default": 24,
+              "minimum": 3,
+              "maximum": 120
+            },
+            "02_module": {
+              "type": "number",
+              "title": "Module",
+              "unit": "mm",
+              "default": 2,
+              "exclusiveMinimum": 0
+            },
+            "03_pressure_angle": {
+              "type": "number",
+              "title": "Pressure angle (°)",
+              "default": 20,
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 90
+            },
+            "04_face_width": {
+              "type": "number",
+              "title": "Face width",
+              "unit": "mm",
+              "default": 10,
+              "exclusiveMinimum": 0
+            },
+            "05_root_fillet": {
+              "type": "number",
+              "title": "Root fillet radius",
+              "unit": "mm",
+              "default": 0,
+              "minimum": 0,
+              "description": "Rounds the tooth roots in the sketch. Set 0 to disable."
+            },
+            "06_rim_fillet": {
+              "type": "number",
+              "title": "Tooth-tip edge fillet",
+              "unit": "mm",
+              "minimum": 0,
+              "default": 0,
+              "description": "Optional 3D round on the outside tips. This can take longer. Set 0 to disable."
+            },
+            "07_bore_diameter": {
+              "type": "number",
+              "title": "Bore diameter",
+              "description": "Set to 0 for a gear without a bore.",
+              "unit": "mm",
+              "default": 8,
+              "minimum": 0
+            },
+            "08_bore_shape": {
+              "type": "string",
+              "title": "Bore shape",
+              "default": "round",
+              "oneOf": [
+                {
+                  "title": "Round",
+                  "const": "round"
+                },
+                {
+                  "title": "D-flat",
+                  "const": "d-flat"
+                },
+                {
+                  "title": "Keyway",
+                  "const": "keyway"
+                }
+              ]
+            },
+            "09_flat_offset": {
+              "type": "number",
+              "title": "Gear 1 D-flat offset",
+              "unit": "mm",
+              "description": "Signed distance from the axis to the flat. Blank uses 75% of the bore radius."
+            },
+            "10_keyway_width": {
+              "type": "number",
+              "title": "Gear 1 Keyway width",
+              "unit": "mm",
+              "exclusiveMinimum": 0
+            },
+            "11_keyway_depth": {
+              "type": "number",
+              "title": "Gear 1 Keyway depth",
+              "unit": "mm",
+              "exclusiveMinimum": 0,
+              "description": "Measured from the side of the circular bore."
+            },
+            "12_backlash": {
+              "type": "number",
+              "title": "Backlash",
+              "unit": "mm",
+              "default": 0,
+              "minimum": 0,
+              "description": "Total play at the pitch circle, split between the two gears when creating a pair."
+            },
+            "13_profile_shift": {
+              "type": "number",
+              "title": "Gear 1 · Profile shift",
+              "default": 0,
+              "minimum": -0.5,
+              "maximum": 0.5,
+              "description": "Dimensionless coefficient. The pair center distance accounts for the combined shift."
+            },
+            "14_helix_angle": {
+              "type": "number",
+              "title": "Helix angle (°)",
+              "default": 0,
+              "exclusiveMinimum": -90,
+              "exclusiveMaximum": 90,
+              "description": "0 creates straight teeth. The second gear uses the opposite angle."
+            },
+            "15_double_helix": {
+              "type": "boolean",
+              "title": "Double helix",
+              "default": false,
+              "description": "With nonzero helix angle, reverses the hand at half the face width."
+            },
+            "16_position_x": {
+              "type": "number",
+              "title": "X",
+              "unit": "mm",
+              "description": "Placement · X",
+              "default": 0
+            },
+            "17_position_y": {
+              "type": "number",
+              "title": "Y",
+              "unit": "mm",
+              "description": "Placement · Y",
+              "default": 0
+            },
+            "18_position_z": {
+              "type": "number",
+              "title": "Z",
+              "unit": "mm",
+              "description": "Placement · Z",
+              "default": 0
+            },
+            "19_rotation": {
+              "type": "number",
+              "title": "Z (°)",
+              "description": "Placement · Rotation around Z (°)",
+              "default": 0
+            },
+            "20_generate_pair": {
+              "type": "boolean",
+              "title": "Gear 2 · Generate second gear",
+              "description": "The second gear shares the module, pressure angle, face width and bore.",
+              "default": false
+            },
+            "21_mating_teeth": {
+              "type": "integer",
+              "title": "Gear 2 · Number of teeth",
+              "default": 48,
+              "minimum": 3,
+              "maximum": 120,
+              "description": "Reduction = Gear 2 teeth ÷ Gear 1 teeth. Example: 48 ÷ 24 = 2:1."
+            },
+            "22_mating_bore_diameter": {
+              "type": "number",
+              "title": "Gear 2 · Bore diameter",
+              "unit": "mm",
+              "minimum": 0,
+              "description": "Leave blank to use Gear 1 bore. Enter 0 for a solid wheel."
+            },
+            "23_mating_bore_shape": {
+              "type": "string",
+              "title": "Gear 2 · Bore shape",
+              "default": "round",
+              "oneOf": [
+                {
+                  "title": "Round",
+                  "const": "round"
+                },
+                {
+                  "title": "D-flat",
+                  "const": "d-flat"
+                },
+                {
+                  "title": "Keyway",
+                  "const": "keyway"
+                }
+              ]
+            },
+            "24_mating_flat_offset": {
+              "type": "number",
+              "title": "Gear 2 D-flat offset",
+              "unit": "mm",
+              "description": "Signed distance from the axis to the flat. Blank uses 75% of the bore radius."
+            },
+            "25_mating_keyway_width": {
+              "type": "number",
+              "title": "Gear 2 Keyway width",
+              "unit": "mm",
+              "exclusiveMinimum": 0
+            },
+            "26_mating_keyway_depth": {
+              "type": "number",
+              "title": "Gear 2 Keyway depth",
+              "unit": "mm",
+              "exclusiveMinimum": 0,
+              "description": "Measured from the side of the circular bore."
+            },
+            "27_mating_profile_shift": {
+              "type": "number",
+              "title": "Gear 2 · Profile shift",
+              "default": 0,
+              "minimum": -0.5,
+              "maximum": 0.5,
+              "description": "Dimensionless coefficient. The pair center distance accounts for the combined shift."
+            }
+          }
+        },
+        "slots": [
+          {
+            "kind": "ribbon",
+            "name": "Involute Gear"
+          }
+        ]
+      },
+      {
+        "name": "internal-involute-gear",
+        "effect": "edit",
+        "input_schema": {
+          "type": "object",
+          "title": "Internal Involute Gear",
+          "x-solidcraft-icon": "icons/internal-involute-gear.svg",
+          "properties": {
+            "01_teeth": {
+              "type": "integer",
+              "title": "Number of teeth",
+              "default": 48,
+              "minimum": 3,
+              "maximum": 120
+            },
+            "02_module": {
+              "type": "number",
+              "title": "Module",
+              "unit": "mm",
+              "default": 2,
+              "exclusiveMinimum": 0
+            },
+            "03_pressure_angle": {
+              "type": "number",
+              "title": "Pressure angle (°)",
+              "default": 20,
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 90
+            },
+            "04_face_width": {
+              "type": "number",
+              "title": "Face width",
+              "unit": "mm",
+              "default": 10,
+              "exclusiveMinimum": 0
+            },
+            "05_rim_thickness": {
+              "type": "number",
+              "title": "Rim thickness",
+              "unit": "mm",
+              "default": 5,
+              "exclusiveMinimum": 0,
+              "description": "Radial material thickness outside the tooth roots."
+            },
+            "06_backlash": {
+              "type": "number",
+              "title": "Backlash",
+              "unit": "mm",
+              "default": 0,
+              "minimum": 0,
+              "description": "Amount removed from tooth thickness at the pitch line."
+            },
+            "07_root_fillet": {
+              "type": "number",
+              "title": "Root fillet radius",
+              "unit": "mm",
+              "default": 0,
+              "minimum": 0,
+              "description": "Rounds the tooth roots in the sketch. Set 0 to disable."
+            },
+            "08_helix_angle": {
+              "type": "number",
+              "title": "Helix angle (°)",
+              "default": 0,
+              "exclusiveMinimum": -90,
+              "exclusiveMaximum": 90,
+              "description": "Set to 0 for straight teeth. Change the sign to reverse the helix."
+            },
+            "09_double_helix": {
+              "type": "boolean",
+              "title": "Double helix",
+              "default": false,
+              "description": "Reverses the helix at mid-width. A large tooth count can exceed the SolidCraft computation deadline."
+            },
+            "10_position_x": {
+              "type": "number",
+              "title": "Position X",
+              "unit": "mm",
+              "default": 0
+            },
+            "11_position_y": {
+              "type": "number",
+              "title": "Position Y",
+              "unit": "mm",
+              "default": 0
+            },
+            "12_position_z": {
+              "type": "number",
+              "title": "Position Z",
+              "unit": "mm",
+              "default": 0
+            },
+            "13_rotation": {
+              "type": "number",
+              "title": "Rotation around Z (°)",
+              "default": 0
+            }
+          }
+        },
+        "slots": [
+          {
+            "kind": "ribbon",
+            "name": "Involute Gear"
+          }
+        ]
+      },
+      {
+        "name": "involute-rack",
+        "effect": "edit",
+        "input_schema": {
+          "type": "object",
+          "title": "Involute Rack",
+          "x-solidcraft-icon": "icons/involute-rack.svg",
+          "properties": {
+            "01_teeth": {
+              "type": "integer",
+              "title": "Number of teeth",
+              "default": 16,
+              "minimum": 1,
+              "maximum": 120
+            },
+            "02_module": {
+              "type": "number",
+              "title": "Module",
+              "unit": "mm",
+              "default": 2,
+              "exclusiveMinimum": 0
+            },
+            "03_pressure_angle": {
+              "type": "number",
+              "title": "Pressure angle (°)",
+              "default": 20,
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 90
+            },
+            "04_face_width": {
+              "type": "number",
+              "title": "Face width",
+              "unit": "mm",
+              "default": 10,
+              "exclusiveMinimum": 0
+            },
+            "05_base_height": {
+              "type": "number",
+              "title": "Base height",
+              "unit": "mm",
+              "default": 5,
+              "exclusiveMinimum": 0,
+              "description": "Distance from the tooth roots to the bottom of the rack."
+            },
+            "06_backlash": {
+              "type": "number",
+              "title": "Backlash",
+              "unit": "mm",
+              "default": 0,
+              "minimum": 0,
+              "description": "Amount removed from tooth thickness at the pitch line."
+            },
+            "07_root_fillet": {
+              "type": "number",
+              "title": "Root fillet radius",
+              "unit": "mm",
+              "default": 0,
+              "minimum": 0,
+              "description": "Rounds the tooth roots in the sketch. Set 0 to disable."
+            },
+            "08_helix_angle": {
+              "type": "number",
+              "title": "Helix angle (°)",
+              "default": 0,
+              "exclusiveMinimum": -90,
+              "exclusiveMaximum": 90,
+              "description": "Set to 0 for straight teeth. Change the sign to reverse the helix."
+            },
+            "09_double_helix": {
+              "type": "boolean",
+              "title": "Double helix",
+              "default": false,
+              "description": "Reverses the tooth direction at mid-width when the helix angle is nonzero."
+            },
+            "10_position_x": {
+              "type": "number",
+              "title": "Position X",
+              "unit": "mm",
+              "default": 0
+            },
+            "11_position_y": {
+              "type": "number",
+              "title": "Position Y",
+              "unit": "mm",
+              "default": 0
+            },
+            "12_position_z": {
+              "type": "number",
+              "title": "Position Z",
+              "unit": "mm",
+              "default": 0
+            },
+            "13_rotation": {
+              "type": "number",
+              "title": "Rotation around Z (°)",
+              "default": 0
+            }
+          }
+        },
+        "slots": [
+          {
+            "kind": "ribbon",
+            "name": "Involute Gear"
+          }
+        ]
+      }
+    ]
+  }
+}

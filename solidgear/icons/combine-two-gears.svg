@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path d="M34.4 24.0 L37.6 27.8 L35.4 33.0 L32.2 31.5 L30.5 33.5 L30.0 38.4 L24.8 40.6 L23.6 37.2 L21.0 37.4 L17.2 40.6 L12.0 38.4 L13.5 35.2 L11.5 33.5 L6.6 33.0 L4.4 27.8 L7.8 26.6 L7.6 24.0 L4.4 20.2 L6.6 15.0 L9.8 16.5 L11.5 14.5 L12.0 9.6 L17.2 7.4 L18.4 10.8 L21.0 10.6 L24.8 7.4 L30.0 9.6 L28.5 12.8 L30.5 14.5 L35.4 15.0 L37.6 20.2 L34.2 21.4 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="21" cy="24" r="4" fill="none" stroke="currentColor" stroke-width="3"/>
+  <path d="M57.1 46.0 L59.5 49.6 L57.2 54.4 L54.6 52.9 L52.9 54.6 L51.6 58.8 L46.5 60.0 L46.0 57.1 L43.5 56.8 L39.5 58.4 L35.4 55.1 L37.4 52.9 L36.0 50.8 L32.3 48.7 L32.3 43.3 L35.2 43.5 L36.0 41.2 L35.4 36.9 L39.5 33.6 L41.2 36.0 L43.5 35.2 L46.5 32.0 L51.6 33.2 L50.8 36.0 L52.9 37.4 L57.2 37.6 L59.5 42.4 L56.8 43.5 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="46" cy="46" r="3" fill="none" stroke="currentColor" stroke-width="3"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <circle cx="58" cy="32" r="1.6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="53" cy="47.3" r="1.6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="40" cy="56.7" r="1.6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="24" cy="56.7" r="1.6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="11" cy="47.3" r="1.6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="6" cy="32" r="1.6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="11" cy="16.7" r="1.6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="24" cy="7.3" r="1.6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="40" cy="7.3" r="1.6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="53" cy="16.7" r="1.6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <path d="M32 11 Q39 10 41 17 Q44 22 50 23 Q56 27 51 33 Q47 37 49 43 Q51 50 43 50 Q36 48 32 53 Q27 56 23 50 Q20 46 14 46 Q8 43 12 36 Q15 31 12 26 Q10 19 18 18 Q25 20 28 14 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="30" cy="31" r="6" fill="none" stroke="currentColor" stroke-width="3"/>
+</svg>
