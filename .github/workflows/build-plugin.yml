@@ -34,3 +34,34 @@ jobs:
           path: solidgear.zip
           archive: false
           if-no-files-found: error
+
+  release:
+    if: github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download plugin ZIP
+        uses: actions/download-artifact@v8
+        with:
+          name: solidgear.zip
+          skip-decompress: true
+
+      - name: Publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if ((Get-Item -LiteralPath 'solidgear.zip').Length -eq 0) {
+            throw 'The plugin ZIP is empty.'
+          }
+          $assets = gh release view $env:RELEASE_TAG --json assets --jq '.assets[].name' 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $env:RELEASE_TAG solidgear.zip --verify-tag --generate-notes
+          } elseif ($assets -cnotcontains 'solidgear.zip') {
+            gh release upload $env:RELEASE_TAG solidgear.zip
+          }
+          exit $LASTEXITCODE

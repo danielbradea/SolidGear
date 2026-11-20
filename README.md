@@ -38,6 +38,17 @@ The script compiles the Rust plugin, wraps it as a WebAssembly component, and wr
 
 GitHub Actions also builds the plugin on pushes and pull requests. Open the **Build SolidGear plugin** workflow under **Actions** to run it manually or download `solidgear.zip` from a successful run.
 
+## Publish a release
+
+Push a version tag after committing the changes you want to release.
+
+```powershell
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+Once the tag build succeeds, the workflow attaches `solidgear.zip` under **Releases → Assets**. It creates the release if needed.
+
 | Path | Purpose |
 | --- | --- |
 | [src/lib.rs](src/lib.rs) | Gear geometry and SolidCraft command calls |
