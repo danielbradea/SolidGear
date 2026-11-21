@@ -9,8 +9,9 @@ SolidGear is a SolidCraft plugin for generating involute gears and racks as 3D s
 | **Involute Gear** | An external gear or a mating pair. Each gear can use a round, D-flat, or keyed bore and its own profile shift. |
 | **Internal Involute Gear** | A ring gear with inward-facing teeth and an adjustable radial rim thickness. |
 | **Involute Rack** | A straight rack with an adjustable tooth count and base height. |
+| **Planetary Gear** | A straight or helical sun, internal ring, and equally spaced planets. The planets use the opposite helix hand. The ring tooth count and fixed-ring reduction are calculated automatically. |
 
-All three tools support straight, helical, and double-helical teeth, adjustable backlash, and placement in X, Y, and Z with rotation about Z. Set **Helix angle** to `0°` for straight teeth. Enable **Double helix** with a nonzero angle to reverse the tooth direction at mid-width.
+The three involute tools support straight, helical, and double-helical teeth, adjustable backlash, and placement in X, Y, and Z with rotation about Z. Set **Helix angle** to `0°` for straight teeth. Enable **Double helix** with a nonzero angle to reverse the tooth direction at mid-width.
 
 **Root fillet radius** rounds the tooth roots in the sketch. **Tooth-tip edge fillet**, available in **Involute Gear**, rounds the outer tips along both faces in 3D. Both settings default to `0 mm`.
 

@@ -31,9 +31,108 @@ impl Guest for SolidGear {
             "involute-gear" => generate_involute_gear(&params),
             "internal-involute-gear" => generate_internal_gear(&params),
             "involute-rack" => generate_rack(&params),
+            "planetary-gear" => generate_planetary_gear(&params),
             _ => Err(invalid("entry", "Unknown SolidGear tool.")),
         }
     }
+}
+
+fn generate_planetary_gear(params: &Value) -> Result<String, PluginError> {
+    let sun = tooth_count(params, "sun_teeth", 24.0)? as u32;
+    let planet = tooth_count(params, "planet_teeth", 18.0)? as u32;
+    let ring = sun + 2 * planet;
+    if ring > 120 {
+        return Err(invalid(
+            "planet_teeth",
+            "Sun teeth plus twice the planet teeth must be at most 120.",
+        ));
+    }
+    let count = number(params, "planet_count", 3.0)?;
+    if count.fract() != 0.0 || !(1.0..=6.0).contains(&count) {
+        return Err(invalid("planet_count", "Enter a whole number from 1 to 6."));
+    }
+    let count = count as u32;
+    if (sun + ring) % count != 0 {
+        return Err(invalid(
+            "planet_count",
+            "For equally spaced planets, the sum of the sun and ring tooth counts must be divisible by the planet count.",
+        ));
+    }
+    let (module, pressure, width) = spur_dimensions(params)?;
+    let rim = positive(params, "rim_thickness", 5.0)?;
+    let backlash = number(params, "backlash", 0.1)?;
+    if backlash < 0.0 {
+        return Err(invalid("backlash", "Backlash cannot be negative."));
+    }
+    let sun_bore = number(params, "sun_bore", 8.0)?;
+    let planet_bore = number(params, "planet_bore", 5.0)?;
+    let orbit = module * f64::from(sun + planet) / 2.0;
+    if count > 1
+        && 2.0 * orbit * (PI / f64::from(count)).sin() <= module * (f64::from(planet) + 2.0)
+    {
+        return Err(invalid(
+            "planet_count",
+            "Adjacent planets need more clearance.",
+        ));
+    }
+    let origin = [
+        number(params, "position_x", 0.0)?,
+        number(params, "position_y", 0.0)?,
+        number(params, "position_z", 0.0)?,
+    ];
+    let rotation = number(params, "rotation", 0.0)?
+        .rem_euclid(360.0)
+        .to_radians();
+    let allowance = backlash / 2.0;
+    let helix = helix_angle(params)?.to_degrees();
+    let double_helix = params["double_helix"].as_bool() == Some(true) && helix != 0.0;
+    let ring_phase = if planet % 2 == 0 {
+        PI / f64::from(ring)
+    } else {
+        0.0
+    };
+    let crown = generate_internal_gear(&json!({
+        "teeth": ring, "module": module, "pressure_angle": pressure.to_degrees(),
+        "face_width": width, "rim_thickness": rim, "backlash": allowance,
+        "position_x": origin[0], "position_y": origin[1], "position_z": origin[2],
+        "rotation": (rotation + ring_phase).to_degrees(), "helix_angle": helix,
+        "double_helix": double_helix
+    }))?;
+    let sun_gear = create_gear(
+        f64::from(sun),
+        module,
+        pressure.to_degrees(),
+        width,
+        (sun_bore, "sun_bore", BoreShape::Round),
+        (allowance, sun <= 80, 0.0, 0.0, 0.0),
+        origin,
+        (rotation, helix, double_helix),
+    )?;
+    let mut planets = Vec::new();
+    for index in 0..count {
+        let azimuth = TAU * f64::from(index) / f64::from(count);
+        let offset = polar(orbit, rotation + azimuth);
+        let center = [origin[0] + offset[0], origin[1] + offset[1], origin[2]];
+        // At each sun contact, put a tooth opposite the corresponding gap.
+        let phase = rotation + azimuth + PI + (f64::from(sun) * azimuth - PI) / f64::from(planet);
+        planets.push(create_gear(
+            f64::from(planet),
+            module,
+            pressure.to_degrees(),
+            width,
+            (planet_bore, "planet_bore", BoreShape::Round),
+            (allowance, planet <= 80, 0.0, 0.0, 0.0),
+            center,
+            (phase, -helix, double_helix),
+        )?);
+    }
+    Ok(json!({
+        "ring_teeth": ring, "sun_planet_distance": orbit, "helix_angle": helix,
+        "double_helix": double_helix,
+        "reduction_ring_fixed": 1.0 + f64::from(ring) / f64::from(sun),
+        "ring": serde_json::from_str::<Value>(&crown).map_err(|error| PluginError::Trap(error.to_string()))?,
+        "sun": sun_gear, "planets": planets
+    }).to_string())
 }
 
 fn generate_internal_gear(params: &Value) -> Result<String, PluginError> {

@@ -470,6 +470,132 @@
             "name": "Involute Gear"
           }
         ]
+      },
+      {
+        "name": "planetary-gear",
+        "effect": "edit",
+        "input_schema": {
+          "type": "object",
+          "title": "Planetary Gear",
+          "x-solidcraft-icon": "icons/planetary-gear.svg",
+          "properties": {
+            "01_sun_teeth": {
+              "title": "Sun teeth",
+              "type": "integer",
+              "maximum": 120,
+              "default": 24,
+              "minimum": 3
+            },
+            "02_planet_teeth": {
+              "maximum": 120,
+              "default": 18,
+              "type": "integer",
+              "title": "Teeth per planet",
+              "minimum": 3,
+              "description": "Ring teeth equal sun teeth plus twice the planet teeth."
+            },
+            "03_planet_count": {
+              "title": "Number of planets",
+              "type": "integer",
+              "maximum": 6,
+              "default": 3,
+              "minimum": 1
+            },
+            "04_module": {
+              "type": "number",
+              "title": "Module",
+              "unit": "mm",
+              "default": 2,
+              "exclusiveMinimum": 0
+            },
+            "05_pressure_angle": {
+              "type": "number",
+              "title": "Pressure angle (°)",
+              "default": 20,
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 90
+            },
+            "06_face_width": {
+              "type": "number",
+              "title": "Face width",
+              "unit": "mm",
+              "default": 10,
+              "exclusiveMinimum": 0
+            },
+            "07_rim_thickness": {
+              "type": "number",
+              "title": "Rim thickness",
+              "unit": "mm",
+              "default": 5,
+              "exclusiveMinimum": 0,
+              "description": "Radial material thickness outside the tooth roots."
+            },
+            "08_sun_bore": {
+              "title": "Sun bore diameter",
+              "type": "number",
+              "minimum": 0,
+              "unit": "mm",
+              "default": 8
+            },
+            "09_planet_bore": {
+              "title": "Planet bore diameter",
+              "type": "number",
+              "minimum": 0,
+              "unit": "mm",
+              "default": 5
+            },
+            "10_backlash": {
+              "title": "Backlash",
+              "type": "number",
+              "minimum": 0,
+              "unit": "mm",
+              "default": 0.1
+            },
+            "11_position_x": {
+              "title": "Position X",
+              "type": "number",
+              "unit": "mm",
+              "default": 0
+            },
+            "12_position_y": {
+              "title": "Position Y",
+              "type": "number",
+              "unit": "mm",
+              "default": 0
+            },
+            "13_position_z": {
+              "title": "Position Z",
+              "type": "number",
+              "unit": "mm",
+              "default": 0
+            },
+            "14_helix_angle": {
+              "type": "number",
+              "title": "Helix angle (°)",
+              "default": 0,
+              "exclusiveMinimum": -90,
+              "exclusiveMaximum": 90,
+              "description": "Set to 0 for straight teeth. The planets use the opposite helix angle from the sun and ring."
+            },
+            "15_double_helix": {
+              "type": "boolean",
+              "title": "Double helix",
+              "default": false,
+              "description": "Reverses the helix at mid-width. Requires a nonzero helix angle. Complex sets can exceed the SolidCraft computation deadline."
+            },
+            "16_rotation": {
+              "title": "Rotation around Z (°)",
+              "type": "number",
+              "default": 0
+            }
+          }
+        },
+        "slots": [
+          {
+            "kind": "ribbon",
+            "name": "Involute Gear"
+          }
+        ]
       }
     ]
   }
